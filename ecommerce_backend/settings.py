@@ -41,7 +41,11 @@ INSTALLED_APPS = [
     'users',
     "category",
     "products",
-    "cart"
+    "cart",
+    "accounts",
+    "variants",
+    "orders",
+    "payments"
 
 ]
 
@@ -131,3 +135,8 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+# settings.py
+# settings.py
+from decouple import config
+
+SEPAY_WEBHOOK_API_KEY = config("SEPAY_WEBHOOK_API_KEY", default="")
