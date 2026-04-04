@@ -5,7 +5,18 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer
 
+from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import csrf_exempt  # 👈 THÊM
+from django.http import JsonResponse
 
+
+@ensure_csrf_cookie
+def csrf(request):
+    return JsonResponse({"message": "ok"})
+
+
+# 🔥 BYPASS CSRF
+@csrf_exempt
 @api_view(["POST"])
 def register(request):
     serializer = RegisterSerializer(data=request.data)
@@ -20,6 +31,8 @@ def register(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+# 🔥 BYPASS CSRF
+@csrf_exempt
 @api_view(["POST"])
 def login(request):
 

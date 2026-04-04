@@ -42,12 +42,12 @@ class CartViewSet(viewsets.GenericViewSet):
         serializer = CartItemSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        product = serializer.validated_data["product"]
+        variant = serializer.validated_data["variant"]  # ← đổi từ product → variant
         quantity = serializer.validated_data.get("quantity", 1)
 
         item, created = CartItem.objects.get_or_create(
             cart=cart,
-            product=product,
+            variant=variant,  # ← đổi
             defaults={"quantity": quantity}
         )
 

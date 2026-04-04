@@ -3,8 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 
-from .models import UserProfile, Address
-from .serializers import UserSerializer, UserProfileSerializer, AddressSerializer
+from .models import  Address
+from .serializers import UserSerializer, AddressSerializer
 
 User = get_user_model()
 

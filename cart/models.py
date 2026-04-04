@@ -1,9 +1,6 @@
 from django.db import models
-
-# Create your models here.
-from django.db import models
 from django.contrib.auth import get_user_model
-from products.models import Product
+from variants.models import ProductVariant   # ← đổi import
 
 User = get_user_model()
 
@@ -11,18 +8,12 @@ User = get_user_model()
 class Cart(models.Model):
 
     user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name="cart"
+        User, on_delete=models.CASCADE,
+        null=True, blank=True, related_name="cart"
     )
-
     session_key = models.CharField(max_length=40, null=True, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    updated_at = models.DateTimeField(auto_now=True)
+    created_at  = models.DateTimeField(auto_now_add=True)
+    updated_at  = models.DateTimeField(auto_now=True)
 
     class Meta:
         constraints = [
@@ -36,8 +27,7 @@ class Cart(models.Model):
         ]
 
     def __str__(self):
-        owner = self.user or self.session_key
-        return f"Cart ({owner})"
+        return f"Cart ({self.user or self.session_key})"
 
     @property
     def total_price(self):
@@ -50,31 +40,24 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
 
-    cart = models.ForeignKey(
-        Cart,
-        on_delete=models.CASCADE,
-        related_name="items"
-    )
-
-    product = models.ForeignKey(
-        Product,
+    cart    = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="items")
+    variant = models.ForeignKey(                          # ← đổi product → variant
+        ProductVariant,
         on_delete=models.CASCADE,
         related_name="cart_items"
     )
-
     quantity = models.PositiveIntegerField(default=1)
-
     added_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ("cart", "product")
+        unique_together = ("cart", "variant")             # ← đổi
         indexes = [
-            models.Index(fields=["cart", "product"]),
+            models.Index(fields=["cart", "variant"]),     # ← đổi
         ]
 
     def __str__(self):
-        return f"{self.quantity}x {self.product.name}"
+        return f"{self.quantity}x {self.variant}"
 
     @property
     def subtotal(self):
-        return self.product.base_price * self.quantity
+        return self.variant.price * self.quantity         # ← đổi
