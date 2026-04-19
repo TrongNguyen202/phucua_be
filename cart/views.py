@@ -24,8 +24,14 @@ class CartViewSet(viewsets.GenericViewSet):
 
     serializer_class = CartSerializer
 
+    # cart/views.py
     def get_queryset(self):
-        return Cart.objects.prefetch_related("items__product").all()
+        return Cart.objects.prefetch_related(
+            "items__variant__product__category",  # ← prefetch đủ
+            "items__variant__size",
+            "items__variant__color",
+            "items__variant__image",
+        ).all()
 
     # GET /cart/
     @action(detail=False, methods=["get"])

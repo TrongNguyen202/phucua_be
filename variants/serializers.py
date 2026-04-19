@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Size, Color, ProductVariant
+from .models import Size, Color, ProductType, ProductVariant
 
 
 class SizeSerializer(serializers.ModelSerializer):
@@ -14,23 +14,40 @@ class ColorSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "hex_code"]
 
 
+class ProductTypeSerializer(serializers.ModelSerializer):  # ← thêm
+    class Meta:
+        model  = ProductType
+        fields = ["id", "name"]
+
+
 class ProductVariantSerializer(serializers.ModelSerializer):
 
-    size     = SizeSerializer(read_only=True)
-    color    = ColorSerializer(read_only=True)
-    size_id  = serializers.PrimaryKeyRelatedField(
+    size    = SizeSerializer(read_only=True)
+    color   = ColorSerializer(read_only=True)
+    type    = ProductTypeSerializer(read_only=True)   # ← thêm
+
+    size_id = serializers.PrimaryKeyRelatedField(
         queryset=Size.objects.all(), source="size", write_only=True, required=False
     )
     color_id = serializers.PrimaryKeyRelatedField(
         queryset=Color.objects.all(), source="color", write_only=True, required=False
     )
+    type_id = serializers.PrimaryKeyRelatedField(     # ← thêm
+        queryset=ProductType.objects.all(), source="type", write_only=True, required=False
+    )
+
     price    = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)
     in_stock = serializers.BooleanField(read_only=True)
 
     class Meta:
         model  = ProductVariant
         fields = [
-            "id", "sku", "size", "size_id", "color", "color_id",
-            "price", "price_override", "stock", "in_stock", "image", "is_active"
+            "id", "sku",
+            "size", "size_id",
+            "color", "color_id",
+            "type", "type_id",   # ← thêm
+            "price", "price_override",
+            "stock", "in_stock",
+            "image", "is_active"
         ]
         read_only_fields = ["id"]

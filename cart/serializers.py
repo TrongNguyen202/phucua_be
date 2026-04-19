@@ -1,13 +1,46 @@
 from rest_framework import serializers
 from .models import Cart, CartItem
-from products.models import Product
 from variants.models import ProductVariant
-from variants.serializers import ProductVariantSerializer
+
+
+class ProductInCartSerializer(serializers.Serializer):
+    """Thông tin product cần thiết trong cart."""
+    id          = serializers.IntegerField()
+    name        = serializers.CharField()
+    thumbnail   = serializers.URLField()
+    slug        = serializers.SlugField()
+    category    = serializers.SerializerMethodField()
+
+    def get_category(self, obj):
+        return {"id": obj.category.id, "name": obj.category.name} if obj.category else None
+
+
+class SizeInCartSerializer(serializers.Serializer):
+    id   = serializers.IntegerField()
+    name = serializers.CharField()
+
+
+class ColorInCartSerializer(serializers.Serializer):
+    id       = serializers.IntegerField()
+    name     = serializers.CharField()
+    hex_code = serializers.CharField()
+
+
+class VariantInCartSerializer(serializers.Serializer):
+    """Variant đầy đủ thông tin dùng trong cart."""
+    id      = serializers.IntegerField()
+    sku     = serializers.CharField()
+    price   = serializers.DecimalField(max_digits=10, decimal_places=2)
+    stock   = serializers.IntegerField()
+    image   = serializers.URLField(allow_null=True, allow_blank=True)
+    size    = SizeInCartSerializer()
+    color   = ColorInCartSerializer()
+    product = ProductInCartSerializer()
 
 
 class CartItemSerializer(serializers.ModelSerializer):
 
-    variant = ProductVariantSerializer(read_only=True)
+    variant    = VariantInCartSerializer(read_only=True)
     variant_id = serializers.PrimaryKeyRelatedField(
         queryset=ProductVariant.objects.all(),
         source="variant",
