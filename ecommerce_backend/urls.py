@@ -27,6 +27,7 @@ urlpatterns = [
     path("api/",            include("variants.urls")),
     path("api/",            include("orders.urls")),
     path("api/",            include("payments.urls")),
-    path("api/accounts/",   include("accounts.urls")),  # ← đổi "api/" thành "api/accounts/"
+    path("api/accounts/",   include("accounts.urls")),
+    path("api/admin-panel/", include("admin_panel.urls")),
 ]
 

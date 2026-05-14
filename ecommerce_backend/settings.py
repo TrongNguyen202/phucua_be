@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     "variants",
     "orders",
     "payments",
-
+    "admin_panel"
 
 ]
 
@@ -161,3 +161,14 @@ CORS_ALLOW_CREDENTIALS = True
 
 # Cho phép gửi cookie (cần cho guest cart dùng session)
 CORS_ALLOW_CREDENTIALS = True
+
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME":  timedelta(days=7),    # ← mặc định 5 phút, đổi thành 1 ngày
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),   # ← refresh 30 ngày
+    "ROTATE_REFRESH_TOKENS":  True,                 # ← tự cấp refresh token mới sau mỗi lần refresh
+    "BLACKLIST_AFTER_ROTATION": True,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}

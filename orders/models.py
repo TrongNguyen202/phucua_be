@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from variants.models import ProductVariant
 from accounts.models import Address
-
+from decimal import Decimal
 User = get_user_model()
 
 
@@ -74,7 +74,7 @@ class OrderItem(models.Model):
 
     @property
     def subtotal(self):
-        return self.unit_price * self.quantity
+        return (self.unit_price or Decimal("0")) * (self.quantity or 0)
 
     def __str__(self):
         return f"{self.quantity}x {self.product_name} (Order #{self.order_id})"
