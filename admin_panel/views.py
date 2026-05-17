@@ -260,3 +260,53 @@ class AdminUserView(APIView):
         u.is_active = is_active
         u.save()
         return Response({"id": u.id, "is_active": u.is_active})
+
+# Thêm vào admin_panel/views.py
+
+import requests
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework.permissions import IsAdminUser
+from rest_framework.parsers import MultiPartParser, FormParser
+# from rest_framework import status
+
+
+class UploadImageView(APIView):
+    """
+    POST /api/admin-panel/upload-image/
+    Upload ảnh lên Imagur, trả về URL.
+    """
+    permission_classes = [IsAdminUser]
+    parser_classes     = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        image_file = request.FILES.get("image")
+        if not image_file:
+            return Response({"error": "Không có file ảnh."}, status=status.HTTP_400_BAD_REQUEST)
+
+        url = "https://imagur.org/wp-admin/admin-ajax.php"
+        payload = {"action": "imagur_upload"}
+        files = {
+            "image": (
+                image_file.name,
+                image_file,
+                image_file.content_type,
+            )
+        }
+        headers = {
+            "accept": "*/*",
+            "origin": "https://imagur.org",
+            "referer": "https://imagur.org/",
+            "user-agent": "Mozilla/5.0",
+        }
+
+        try:
+            resp = requests.post(url, headers=headers, data=payload, files=files, timeout=30)
+            data = resp.json()
+        except Exception as e:
+            return Response({"error": f"Upload thất bại: {str(e)}"}, status=status.HTTP_502_BAD_GATEWAY)
+
+        if not data.get("success"):
+            return Response({"error": "Upload ảnh thất bại."}, status=status.HTTP_502_BAD_GATEWAY)
+
+        return Response({"url": data["data"]["direct_url"]}, status=status.HTTP_200_OK)

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Size, Color, ProductType, ProductVariant
-
+from .models import Product
 
 class SizeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -21,7 +21,9 @@ class ProductTypeSerializer(serializers.ModelSerializer):  # ← thêm
 
 
 class ProductVariantSerializer(serializers.ModelSerializer):
-
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all()
+    )
     size    = SizeSerializer(read_only=True)
     color   = ColorSerializer(read_only=True)
     type    = ProductTypeSerializer(read_only=True)   # ← thêm
@@ -41,13 +43,36 @@ class ProductVariantSerializer(serializers.ModelSerializer):
 
     class Meta:
         model  = ProductVariant
+        # fields = [
+        #     "id", "sku",
+        #     "size", "size_id",
+        #     "color", "color_id",
+        #     "type", "type_id",   # ← thêm
+        #     "price", "price_override",
+        #     "stock", "in_stock",
+        #     "image", "is_active"
+        # ]
         fields = [
-            "id", "sku",
-            "size", "size_id",
-            "color", "color_id",
-            "type", "type_id",   # ← thêm
-            "price", "price_override",
-            "stock", "in_stock",
-            "image", "is_active"
+            "id",
+            "product",
+            "sku",
+
+            "size",
+            "size_id",
+
+            "color",
+            "color_id",
+
+            "type",
+            "type_id",
+
+            "price",
+            "price_override",
+
+            "stock",
+            "in_stock",
+
+            "image",
+            "is_active"
         ]
         read_only_fields = ["id"]

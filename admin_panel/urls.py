@@ -5,14 +5,45 @@ from .views import (
     AdminProductViewSet,
     AdminOrderViewSet,
     AdminUserView,
+    UploadImageView,
 )
 
 router = DefaultRouter()
-router.register(r"products", AdminProductViewSet, basename="admin-product")
-router.register(r"orders",   AdminOrderViewSet,   basename="admin-order")
+
+router.register(
+    r"products",
+    AdminProductViewSet,
+    basename="admin-product"
+)
+
+router.register(
+    r"orders",
+    AdminOrderViewSet,
+    basename="admin-order"
+)
 
 urlpatterns = [
-    path("dashboard/", AdminDashboardView.as_view(), name="admin-dashboard"),
-    path("users/",     AdminUserView.as_view(),      name="admin-users"),
-    path("",           include(router.urls)),
+
+    path(
+        "dashboard/",
+        AdminDashboardView.as_view(),
+        name="admin-dashboard"
+    ),
+
+    path(
+        "users/",
+        AdminUserView.as_view(),
+        name="admin-users"
+    ),
+
+    path(
+        "upload-image/",
+        UploadImageView.as_view(),
+        name="admin-upload-image"
+    ),
+
+    path(
+        "",
+        include(router.urls)
+    ),
 ]
